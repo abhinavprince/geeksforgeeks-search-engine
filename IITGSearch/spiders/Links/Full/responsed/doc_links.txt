@@ -1,0 +1,8 @@
+http://www.geeksforgeeks.org/wp-content/uploads/Medium1.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/Runnable-Thread-Vowel-Counter-and-Shared-Location.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/List-the-file-File.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/SSN-Problems-String.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/Inheritance-and-Overriding-OOPS.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/Custom-Exception.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/Encryption-IO.pdf
+http://www.geeksforgeeks.org/wp-content/uploads/Demaged-Gift-Logic.pdf
