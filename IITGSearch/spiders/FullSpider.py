@@ -37,9 +37,9 @@ class FullSpider(CrawlSpider):
     repo_name_link_file = open(r'Links/Full/found/repo_name_links.txt', 'a+')
 
     start_urls = [
-        'http://www.geeksforgeeks.org/',
+        'http://harrypotter.wikia.com/wiki/Main_Page',
     ]
-    rules = (Rule(LinkExtractor(allow='geeksforgeeks\.org',
+    rules = (Rule(LinkExtractor(allow='harrypotter.wikia.com',
                                 deny=(),
                                 canonicalize=True,
                                 deny_extensions=(),

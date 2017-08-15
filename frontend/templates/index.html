@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset = "utf-8">
+    <meta http-equiv="X-UA-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search</title> 
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<!--Dependencies-->
+    <link href="../static/bootstrap/css/font-awesome.min.css" rel = "stylesheet">
+    <link href="../static/bootstrap/css/bootstrap.min.css" rel = "stylesheet">
+    <link href="../static/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="../static/bootstrap/css/bootstrap-social.css" rel="stylesheet">
+    <link href="../css/mystyles.css" rel="stylesheet">
+    <link rel="../stylesheet" href="static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="../static/AdminLTE/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="../static/AdminLTE/css/skins/_all-skins.min.css">
+    <script src="../static/bootstrap/js/jquery.min.js"></script>
+    <script src="../static/bootstrap/js/jquery-ui.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.js"></script>
+  </head>
+  <body>
+
+    <div>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/home">Search</a>
+            </div>
+        </div>
+    </nav>
+    </div>
+
+   
+    <div class="container" style="text-align: center;">
+        <form action="http://localhost:5000/search" method="post" class="form-inline">
+            <label>Enter Query:</label>
+            <input type="text" name = "nm" class="form-control">
+            <button type = "submit" value = "submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <hr>
+
+    <div class="container">
+        <table class="table table-striped table-bordered table-hover">
+            <thead >
+                <tr>
+                    <th style="text-align: center;">
+                        TD-IDF
+                    </th>
+                    <th style="text-align: center;">
+                        BM25
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul>
+	                        {% if name1 %}
+	                        {% for obj in name1 %}
+
+	                        <li><a href = {{obj.ab}}> {{ obj.ab }} </a></li>
+                            <p>{{obj.cd}}</p>
+	            
+	                        {% endfor %}
+	                        {%endif%}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                        	{% if name2 %}
+                        	{% for obj in name2 %}
+
+                        	<li><a href = {{obj.ab}}> {{ obj.ab }} </a></li>
+                            <p>{{obj.cd}}</p>
+            
+	                        {% endfor %}
+	                        {%endif%}
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>            
+        </table>
+    </div>
+
+
+
+
+<!-- OLD CODE -->
+
+
+
+
+ <!--  <nav class="navbar navbar-inverse navbar-fixed-top" role = "navigation">
+        <div class = "container">
+            <div class = "navbar-header">
+                <button type = "button" class = "navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class = "navbar-brand" href="index.html">Youtube</a>
+            </div>
+            <div id="navbar" class="navbar-header navbar-collapse collapse">
+                <ul class="nav navbar-nav ">
+                    <li class="active"><a href="index.html">Home</a></li>                    
+                </ul>
+            </div>        
+        </div>
+    </nav> -->
+
+
+
+<!--
+
+    <div style="margin-top: 52px;">
+         <table width="100%" border="0">
+            <tr>
+               <td colspan="2" bgcolor="#b5dcb3" align="center">
+                  <form action = "http://localhost:5000/search" method = "post">
+                        <p>Enter Query:</p>
+                        <p><input type = "text" name = "nm" /></p>
+                        <p><input type = "submit" value = "submit" /></p>
+                   </form>
+              </td>
+            </tr>
+
+            <tr valign="top">
+                  <td><div style="width:100%; max-height:600px; overflow:auto">
+                      <ul>
+                        {% if name %}
+                        {% for obj in name %}
+
+                        <li><a> {{ obj }} </a></li>
+            
+                        {% endfor %}
+                        {%endif%}
+                     </ul>
+                  </div></td>
+                  <td bgcolor="#eee" width="75%" height="600">
+
+                  </td>
+            </tr>
+         </table>
+   </div>
+
+  </body>
+</html>
+
+-->
