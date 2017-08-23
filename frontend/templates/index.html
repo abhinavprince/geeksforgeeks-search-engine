@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset = "utf-8">
@@ -20,6 +20,21 @@
     <script src="../static/bootstrap/js/jquery.min.js"></script>
     <script src="../static/bootstrap/js/jquery-ui.js"></script>
     <script src="../static/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+    $('.nav-tabs a').on('shown.bs.tab' , function(event){
+        var x = $(event.target).text();
+        var y = 0;
+        {% if count1 %}
+        if(x == "TD-IDF")
+            y = {{count1*10}};
+        else if(x == "BM25")
+            y = {{count2*10}};
+        {% endif %}
+        $(".score span").text(y);
+    });
+    });
+    </script>
   </head>
   <body>
 
@@ -42,8 +57,66 @@
         </form>
     </div>
     <hr>
-
     <div class="container">
+    {%if did %}
+        <h4> Did you mean: &nbsp; <a href="/success/{{did}}">{{ did }}</a>
+        </h4>
+        {% endif %}
+    </div>
+    <div class="container">
+		<ul class="nav nav-tabs">
+    		<li class="active"><a data-toggle="tab" href="#TD"><b>TD-IDF</b></a></li>
+    		<li><a data-toggle="tab" href="#BM"><b>BM25</b></a></li>
+            <li style="float: right;"><a class="score">Precision Score:&nbsp;
+                <span>
+                {%if count1%}
+                    {{count1*10}}
+                {%endif%}
+                </span>
+            </a></li>           
+		</ul>
+
+		<div class="tab-content">
+    		<div id="TD" class="tab-pane fade in active">
+    			<p></p>
+      			<ul style="float:left;">
+	                {% if name1 %}
+	                {% for obj in name1 %}
+
+	                <li><a href = {{obj.ab}}> {{ obj.ab }} </a></li>
+	                <p>{{obj.cd}}</p>
+	    
+	                {% endfor %}
+	                {%endif%}
+	            </ul>	            
+	            <!-- <ul style="width:50%; float:right;">
+                {%if count1%}
+	    			<h2>{{count1*10}}</h2>
+                {%endif%}
+	            </ul> -->
+    		</div>
+    		<div id="BM" class="tab-pane fade">
+    			<p></p>
+      			<ul style="float:left;">
+                	{% if name2 %}
+                	{% for obj in name2 %}
+
+                	<li><a href = {{obj.ab}}> {{ obj.ab }} </a></li>
+                    <p>{{obj.cd}}</p>
+    
+                    {% endfor %}
+                    {%endif%}
+                </ul>
+                <!-- <ul style="width:50%; float:right;">
+                {%if count2%}
+                    <h2>{{count2*10}}</h2>
+                {%endif%}
+                </ul> -->
+    		</div>
+  		</div>    	
+    </div>
+
+    <!-- <div class="container">
         <table class="table table-striped table-bordered table-hover">
             <thead >
                 <tr>
@@ -84,7 +157,7 @@
                 </tr>
             </tbody>            
         </table>
-    </div>
+    </div> -->
 
 
 

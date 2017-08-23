@@ -1,17 +1,12 @@
 # import the Flask class from the flask module
-from flask import Flask, session, render_template, redirect, url_for, request,  Response
-from flaskext.mysql import MySQL
+from flask import Flask, session, render_template, redirect, url_for, request,  Response, Markup
 from flask_session import Session
-import MySQLdb
-from flask_pymongo import PyMongo
 import json
-from py2neo import Graph, authenticate
-from py2neo import Node, Relationship
 
 import re
 from collections import Counter
 
-
+from autocorrect import spell
 import sys, os
 import pickle
 import operator
@@ -24,6 +19,17 @@ try:
 except ImportError:
     sys.stderr.write("error: %s\n" % "Can't import hunspell module!!!")
     sys.exit(1)
+
+from googleapiclient.discovery import build
+import pprint
+
+my_api_key = "AIzaSyDhxdW5w8MKtzXhqdP_ifSJIiJgZaDLUUg"
+my_cse_id = "008408648827036128353:hfsq9opynu4"
+
+def google_search(search_term, api_key, cse_id, **kwargs):
+	service = build("customsearch", "v1", developerKey=api_key)
+	res = service.cse().list(q=search_term, cx=cse_id, **kwargs).execute()
+	return res['items']
 
 
 def tokenize(text):
@@ -81,33 +87,38 @@ avgl = ss/5000
 
 def ranking(q):
 
-    l = stem_query(q)
+	m = stem_query(q)
+	l = []
+	for word in m:
+		if word not in dummy_words:
+			l.append(word)
     
-    print l
-    scores = {}
-    for term in l:
-        if term in inv:
-            for (doc, tf) in inv[term]:
-                if doc in scores:
-                    scores[doc] = scores[doc]+tf*idf[term]
-                else:
-                    scores[doc] = tf*idf[term]
-    tf_score = sorted(scores.items(), key=operator.itemgetter(1))
-    tf_score.reverse()
+	print l
+	scores = {}
+	for term in l:
+		if term in inv:
+			for (doc, tf) in inv[term]:
+				if doc in scores:
+					scores[doc] = scores[doc]+tf*idf[term]
+				else:
+					scores[doc] = tf*idf[term]
+	tf_score = sorted(scores.items(), key=operator.itemgetter(1))
+	tf_score.reverse()
+	scores = {}
 
-    for term in l:
-        if term in inv:
-            for (doc, tf) in inv[term]:
-                sc = (tf*(k1+1))/(tf + k1*(1-b1+b1*(doc_len[doc]/avgl)))
-                if doc in scores:
-                    scores[doc] = scores[doc]+idf[term]*sc
-                else:
-                    scores[doc] = idf[term]*sc
+	for term in l:
+		if term in inv:
+			for (doc, tf) in inv[term]:
+				sc = (tf*(k1+1))/(tf + k1*(1-b1+b1*(doc_len[doc]/avgl)))
+				if doc in scores:
+					scores[doc] = scores[doc]+idf[term]*sc
+				else:
+					scores[doc] = idf[term]*sc
    
-    okapi_score = sorted(scores.items(), key=operator.itemgetter(1))
-    okapi_score.reverse()
+	okapi_score = sorted(scores.items(), key=operator.itemgetter(1))
+	okapi_score.reverse()
 
-    return (tf_score, okapi_score)
+	return (tf_score, okapi_score)
 
 
 
@@ -120,6 +131,14 @@ def hello():
 
 @app.route('/success/<query>')
 def success(query):
+	dym = ""
+	temp = query.split()
+	for  i in range(len(temp)):
+		temp[i] = spell(temp[i])
+	if query != ' '.join(temp):
+		dym = ' '.join(temp)
+
+	print "|||   " + dym + "  ||||||||||"
 
 	x , y = ranking(query)
 	a=[]
@@ -132,7 +151,11 @@ def success(query):
 	for i in x:
 		stri = ""
 		file = open(os.path.join('texts/', i[0]),'r')
-		word = query.split()
+		l = query.split()
+		word = []
+		for ass in l:
+			if ass not in dummy_words:
+				word.append(ass)
 		doc = []
 		for line in file:
 			for ex in line.decode('utf-8').split():
@@ -141,17 +164,22 @@ def success(query):
 		for k in range(500 ,len(doc)):
 			if doc[k].lower() in word:
 				#print doc[k]
+				doc[k] = "<b>" + doc[k]+ "</b>"
 				s = doc[k:k+4]
-				if len(stri) > 200:
+				if len(stri) > 350:
 					break
-				stri += ' '.join(s)
-		c.append(stri)
+				stri += ' '.join(s) + "..."
+		c.append(Markup(stri))
 		file.close()
 	d = []
 	for j in y:
 		stri = ""
 		file = open(os.path.join('texts/', j[0]),'r')
-		word = query.split()
+		l = query.split()
+		word = []
+		for ass in l:
+			if ass not in dummy_words:
+				word.append(ass)
 		doc = []
 		for line in file:
 			for ex in line.decode('utf-8').split():
@@ -159,24 +187,46 @@ def success(query):
 
 		for k in range(500, len(doc)):
 			if doc[k].lower() in word:
+				doc[k] = "<b>" + doc[k]+ "</b>"
 				s = doc[k:k+4]
-				if len(stri) > 200:
+				if len(stri) > 350:
 					break
-				stri += ' '.join(s)
-		d.append(stri)
+				stri += ' '.join(s) + "..."
+		d.append(Markup(stri))
 		file.close()
 	m = []
 	n = []
+	m_ls = []
+	n_ls = []
 	for i in range(len(a)):
 		m.append({'ab':a[i], 'cd':c[i]})
+		m_ls.append(a[i])
 	for i in range(len(b)):
 		n.append({'ab':b[i], 'cd':d[i]})
-	print m
-	return render_template('index.html', name1= m, name2=n)
+		n_ls.append(b[i])
+	results = google_search(query, my_api_key, my_cse_id, num=10)
+	listy=[]
+	for result in results:
+		listy.append(result['formattedUrl'])
+
+	m_ls = m_ls[0:5]
+	n_ls = n_ls[0:5]
+	print m_ls
+	print n_ls
+	count_tf=0
+	count_bm=0
+	for obj in listy:
+		obj = "http://" + obj
+		if obj in m_ls:
+			count_tf += 1
+		if obj in n_ls:
+			count_bm += 1
+
+	return render_template('index.html', name1= m, name2=n, name3=listy, count1=count_tf+1, count2= count_bm+1, word_list=word, did=dym)
 
 @app.route('/search',methods = ['POST', 'GET'])
 def search():
-	user="hello"
+
 	if request.method=="POST":
 		user = request.form['nm']
 	return redirect(url_for('success',query = user))
@@ -188,5 +238,4 @@ def home():
 
 
 if __name__ == '__main__':
-#	app.secret_key = 'qwerty'
-	app.run(host='0.0.0.0', debug=True)
+	app.run(host='0.0.0.0',port=6969, debug=True)
